@@ -61,6 +61,22 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/^([A-Z]{3})([0-9])/, "$1-$2"),
   );
 
+  const maskMoeda = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener("input", (e) => {
+        let v = e.target.value.replace(/\D/g, ""); // Remove tudo que não é número
+        v = (v / 100).toFixed(2).replace(".", ","); // Divide por 100 para centavos
+        v = v.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,"); // Milhão
+        v = v.replace(/(\d)(\d{3}),/g, "$1.$2,"); // Milhar
+        e.target.value = "R$ " + v;
+      });
+    }
+  };
+
+  maskMoeda("mensalidade");
+  maskMoeda("instalacao");
+
   const validarEntradas = () => {
     const v = (id) => document.getElementById(id).value.trim();
     const el = (id) => document.getElementById(id);
@@ -78,6 +94,16 @@ document.addEventListener("DOMContentLoaded", () => {
         id: "nome",
       },
       { condicao: v("cpf").length < 14, msg: "CPF incompleto.", id: "cpf" },
+      {
+        condicao: v("nascimento") === "" || v("nascimento").length < 10,
+        msg: "Informe a data de nascimento completa.",
+        id: "nascimento",
+      },
+      {
+        condicao: v("telefone").length < 14,
+        msg: "Telefone fixo obrigatório ou incompleto.",
+        id: "telefone",
+      },
       {
         condicao: v("whatsapp_cliente").length < 14,
         msg: "WhatsApp inválido.",
